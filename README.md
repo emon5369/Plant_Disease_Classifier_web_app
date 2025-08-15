@@ -1,5 +1,7 @@
 # 🌿 Plant Disease Classifier – Web App
 
+<img width="753" height="579" alt="image" src="https://github.com/user-attachments/assets/6474bb30-6d64-43e4-9bdf-1c14feca0008" />
+
 A full-stack web application built with **React** (frontend) and **FastAPI** (backend) that predicts plant leaf diseases from uploaded images.
 The app displays both the **predicted class** and the **confidence score**, making it easy for farmers, researchers, and hobbyists to detect plant health issues quickly.
 
@@ -40,9 +42,9 @@ cd plant_disease_classifier_web_app
 ### 2️⃣ Backend Setup (FastAPI)
 
 ```bash
-cd backend
+cd api
 pip install -r requirements.txt
-uvicorn main:app --reload
+uvicorn app:app --reload
 ```
 
 Backend will run on **[http://127.0.0.1:8000](http://127.0.0.1:8000)**

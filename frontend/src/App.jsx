@@ -76,9 +76,19 @@ function App() {
         </div>
 
         {/* Main Card */}
-        <div className="relative flex flex-col items-center backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:shadow-green-500/20">
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-blue-500/10 pointer-events-none"></div>
+        <div
+          className="relative flex flex-col items-center backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:shadow-green-500/20"
+          style={{
+            backgroundImage:
+              // 'url("https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1200")',
+              'url("src/assets/bg.jpg")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundBlendMode: "overlay",
+          }}
+        >
+          {/* Dark Overlay for better readability */}
+          <div className="absolute inset-0 bg-gradient-to-br from-green-900/75 via-emerald-900/70 to-teal-900/60 pointer-events-none"></div>
 
           <div className="relative z-10 w-full p-3 md:p-6 space-y-3 md:space-y-4">
             {/* Instructions */}
@@ -161,7 +171,7 @@ function App() {
 
             {/* Status Message */}
             {image && !loading && !data && (
-              <div className="flex items-center justify-center gap-2 p-2 md:p-2.5 rounded-xl bg-green-500/20 border border-green-500/30 animate-fade-in">
+              <div className="flex items-center justify-center gap-2 p-1 rounded-xl bg-green-500/20 border border-green-500/30 animate-fade-in">
                 <svg
                   className="w-4 h-4 text-green-400"
                   fill="currentColor"
@@ -180,7 +190,7 @@ function App() {
             )}
 
             {error && (
-              <div className="flex items-center justify-center gap-2 p-2 md:p-2.5 rounded-xl bg-red-500/20 border border-red-500/30 animate-fade-in">
+              <div className="flex items-center justify-center gap-2 p-1 rounded-xl bg-red-500/20 border border-red-500/30 animate-fade-in">
                 <svg
                   className="w-4 h-4 text-red-400"
                   fill="currentColor"

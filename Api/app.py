@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from tensorflow.keras.models import load_model
 # from keras.layers import TFSMLayer
@@ -39,9 +39,21 @@ class_names = [
 ]
 
 def preprocess_image(image_bytes):
-    img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-    img = img.resize((256, 256))  # Change size to match your model input
-    img_array = np.array(img) / 255.0  # Normalize if needed
+    # Validate image size (max 10MB)
+    if len(image_bytes) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Image size exceeds 10MB limit")
+    
+    img = Image.open(io.BytesIO(image_bytes))
+    
+    # Validate image dimensions (max 4096x4096)
+    if img.width > 4096 or img.height > 4096:
+        raise HTTPException(status_code=400, detail="Image dimensions too large (max 4096x4096)")
+    
+    # Convert to RGB if needed and resize in one step
+    img = img.convert("RGB").resize((256, 256), Image.LANCZOS)
+    
+    # Convert to normalized numpy array efficiently
+    img_array = np.asarray(img, dtype=np.float32) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
     return img_array
 
@@ -51,16 +63,23 @@ def read_root():
 
 @app.post("/predict")
 async def predict_disease(file: UploadFile = File(..., description="Upload an image file for disease prediction")):
+    # Validate file type
+    if not file.content_type or not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
     image = await file.read()
     processed_image = preprocess_image(image)
-    prediction = model(processed_image)
-    predicted_class_index = np.argmax(prediction, axis=1)
-    confidence = np.max(prediction, axis=1)
-    disease_name = class_names[int(predicted_class_index[0])]
+    
+    # Use model.predict() instead of model() for better performance
+    prediction = model.predict(processed_image, verbose=0)
+    
+    predicted_class_index = np.argmax(prediction, axis=1)[0]
+    confidence = np.max(prediction, axis=1)[0]
+    disease_name = class_names[predicted_class_index]
+    
     return {
-        "predicted_class": int(predicted_class_index[0]),
+        "predicted_class": int(predicted_class_index),
         "disease_name": disease_name,
-        # "confidence": float(confidence)
         "confidence": f"{float(confidence) * 100: .2f} %"
     }
 

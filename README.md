@@ -1,6 +1,6 @@
 # 🌿 Plant Disease Classifier – Web App
 
-<img width="1356" height="673" alt="image" src="https://github.com/user-attachments/assets/2164cfba-7f09-4e52-89f8-24922b747bff" />
+<img width="1365" height="678" alt="image" src="https://github.com/user-attachments/assets/efccd88f-66eb-445d-a67e-abb51702dcbb" />
 
 A full-stack web application built with **React** (frontend) and **FastAPI** (backend) that predicts plant leaf diseases from uploaded images.
 The app displays both the **predicted class** and the **confidence score**, making it easy for farmers, researchers, and hobbyists to detect plant health issues quickly.

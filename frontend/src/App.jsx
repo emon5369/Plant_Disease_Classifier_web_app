@@ -12,6 +12,27 @@ function App() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setError("Image size exceeds 10MB limit");
+        setImage(null);
+        setPreview(null);
+        return;
+      }
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError("Please select a valid image file");
+        setImage(null);
+        setPreview(null);
+        return;
+      }
+      
+      // Clean up previous preview URL to prevent memory leak
+      if (preview) {
+        URL.revokeObjectURL(preview);
+      }
+      
       setImage(file);
       setPreview(URL.createObjectURL(file));
       setData(""); // Clear previous results
@@ -37,22 +58,30 @@ function App() {
         method: "POST",
         body: formData,
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to classify image");
+      }
+      
       const data = await response.json();
-      console.log("Prediction result:", data);
       setData(data);
     } catch (error) {
       console.error("Error:", error);
-      setError("Failed to classify image. Please try again.");
+      setError(error.message || "Failed to classify image. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  // Cleanup preview URL on unmount to prevent memory leak
   useEffect(() => {
-    if (data) {
-      console.log("Received data:", data);
-    }
-  }, [data]);
+    return () => {
+      if (preview) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
 
   const getSeverityColor = (diseaseName) => {
     if (!diseaseName) return "";
